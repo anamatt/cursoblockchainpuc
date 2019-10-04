@@ -31,6 +31,12 @@ string = texto - deve ser usado entre aspas - ex. string "texto"
     }
 //esta função, por exemplo permite a terceiros a visualização do valor (função publica de ver o valor, que retorna para esta informação)
 
+    function simulaMulta (uint mesesRestantes, uint totalMesesContrato)
+    public
+    view
+    returns (uint valorMulta){
+        valorMulta = valor*numeroMaximoLegalDeAlugueisParaMulta;   
+    }
 
 }
 
