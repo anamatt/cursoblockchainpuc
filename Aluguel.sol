@@ -41,6 +41,11 @@ string = texto - deve ser usado entre aspas - ex. string "texto"
         return valorMulta;
     }
     
+    function reajustaAluguel (uint percentualReajuste) public {
+        uint valorDoAcrescimo = 0;
+        valorDoAcrescimo = ((valor*percentualReajuste)/100);
+        valor = valor + valorDoAcrescimo;
+    }
 
 }
 
@@ -49,3 +54,4 @@ LEMBRAR DESTES LINKS:
 https://solidity.readthedocs.io/en/v0.5.12/types.html
 https://medium.com/@vieira.lucas/solidity-crie-contratos-inteligentes-para-a-blockchain-ethereum-c771eb8567cf
 https://www.udemy.com/course/contratos-inteligentes/ - INSCREVEEEEEER
+*/
