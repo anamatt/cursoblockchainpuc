@@ -35,8 +35,12 @@ string = texto - deve ser usado entre aspas - ex. string "texto"
     public
     view
     returns (uint valorMulta){
-        valorMulta = valor*numeroMaximoLegalDeAlugueisParaMulta;   
+        valorMulta = valor*numeroMaximoLegalDeAlugueisParaMulta;
+        valorMulta = valorMulta/totalMesesContrato;
+        valorMulta = valorMulta*mesesRestantes;
+        return valorMulta;
     }
+    
 
 }
 
@@ -45,4 +49,3 @@ LEMBRAR DESTES LINKS:
 https://solidity.readthedocs.io/en/v0.5.12/types.html
 https://medium.com/@vieira.lucas/solidity-crie-contratos-inteligentes-para-a-blockchain-ethereum-c771eb8567cf
 https://www.udemy.com/course/contratos-inteligentes/ - INSCREVEEEEEER
-*/
