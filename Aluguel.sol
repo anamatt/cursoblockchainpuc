@@ -42,6 +42,9 @@ string = texto - deve ser usado entre aspas - ex. string "texto"
     }
     
     function reajustaAluguel (uint percentualReajuste) public {
+        if (percentualReajuste > 20) {
+            percentualReajuste = 20;
+        }
         uint valorDoAcrescimo = 0;
         valorDoAcrescimo = ((valor*percentualReajuste)/100);
         valor = valor + valorDoAcrescimo;
@@ -51,6 +54,21 @@ string = texto - deve ser usado entre aspas - ex. string "texto"
         valor = valorCerto;
     }
 
+    function aplicaMulta (uint mesesRestantes, uint percentual) public {
+        require(mesesRestantes<30, "Período de contrato inválido");
+//require exige algo do contrato, como, por exemplo, que o número de meses seja menor do que 30 - do contrário, aparece mensagem de inválido
+        for (uint i=1; i<mesesRestantes; i++) {
+            valor = valor+((valor*percentual)/100);
+        }
+/*
+for = enquanto for - exige três informações: 
+o uint i (indice) [= 1] ; PARÂMETRO INICIAL
+i (condicional) - no caso, se for menor do que os meses restantes; 
+i++ = atalho que significa i = i + 1
+*/
+    }
+        
+
 }
 
 /*
@@ -58,4 +76,3 @@ LEMBRAR DESTES LINKS:
 https://solidity.readthedocs.io/en/v0.5.12/types.html
 https://medium.com/@vieira.lucas/solidity-crie-contratos-inteligentes-para-a-blockchain-ethereum-c771eb8567cf
 https://www.udemy.com/course/contratos-inteligentes/ - INSCREVEEEEEER
-*/
