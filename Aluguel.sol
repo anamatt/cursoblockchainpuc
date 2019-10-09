@@ -47,6 +47,10 @@ string = texto - deve ser usado entre aspas - ex. string "texto"
         valor = valor + valorDoAcrescimo;
     }
 
+    function aditamentoValorAluguel (uint valorCerto) public {
+        valor = valorCerto;
+    }
+
 }
 
 /*
