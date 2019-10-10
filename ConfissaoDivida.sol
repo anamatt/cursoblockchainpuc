@@ -21,23 +21,26 @@ contract ConfissaoDeDivida {
         return valor;
     }
      
-     function ValorDaParcela() public view returns (uint) {
+    function ValorDaParcela() public view returns (uint) {
         return valorParcela;
     }
 
-    function CalcularParcela (uint parcelas) public {
+    function CalcularParcela (uint parcelas) public returns (uint) {
         require (parcelas < 24, "Parcelamento Inválido");
         parcelas = parcelamento;
         valorParcela = valor/parcelamento;
+        return valorParcela;
     }
     
-    function InserirReajusteAnual (uint indiceIGPM) public {
+    function InserirReajusteAnual (uint indiceIGPM) public returns (uint) {
         if (indiceIGPM < 1) {
             indiceIGPM = 1;
         }
         uint reajuste = 1;
         reajuste = (valor*indiceIGPM);
         indiceReajuste = reajuste;
+        valor = reajuste;
+        return valor;
     }
     function aplicarMulta (uint mesesRestantes) public {
         require(mesesRestantes < parcelamento, "Cálculo inválido");
