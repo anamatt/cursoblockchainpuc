@@ -10,11 +10,12 @@ contract ConfissaoDeDivida {
     uint private valorParcela;
     uint private parcelamento;
     
-    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, uint valorDivida) public{
+    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, uint valorDivida, uint numeroParcelas) public{
         credor = nomeCredor;
         devedor = nomeDevedor;
         valor = valorDivida;
         objeto = objetoDivida;
+        parcelamento = numeroParcelas;
     }
     
     function ValorDoDebito() public view returns (uint) {
@@ -42,10 +43,11 @@ contract ConfissaoDeDivida {
         valor = reajuste;
         return valor;
     }
-    function aplicarMulta (uint mesesRestantes) public {
+    function aplicarMulta (uint mesesRestantes, uint percentual) public {
         require(mesesRestantes < parcelamento, "Cálculo inválido");
+        require (percentual < 24, "Percentual inválido");
         for (uint i=1; i<mesesRestantes; i++) {
-            valor = valor+(valor/10);
+            valor = ((valor+(valor/10))*percentual)/100;
         }
     }
     
