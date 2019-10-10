@@ -10,11 +10,12 @@ contract ConfissaoDeDivida {
     uint private valorParcela;
     uint private parcelamento;
     
-    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, uint valorDivida) public{
+    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, uint valorDivida, uint numeroParcelas) public{
         credor = nomeCredor;
         devedor = nomeDevedor;
         valor = valorDivida;
         objeto = objetoDivida;
+        parcelamento = numeroParcelas;
     }
     
     function ValorDoDebito() public view returns (uint) {
@@ -25,22 +26,15 @@ contract ConfissaoDeDivida {
         return valorParcela;
     }
      
-    function CalcularParcela (uint256 ParcelaOriginal) public view returns (uint) {
-        ParcelaOriginal = valor/parcelamento;
-        ParcelaOriginal = valorParcela;
+    function CalcularParcela () public returns (uint) {
+        valorParcela = valor/parcelamento;
         return valorParcela;
-    }
-        
-    function InserirParcelamento (uint numeroParcelas) public returns (uint) {
-        require(numeroParcelas < 25, "Número de parcelas indisponível");
-        parcelamento = numeroParcelas;
-        return parcelamento;
     }
     
     function InserirReajusteAnual (int indiceIGPM) public returns (int) {
         indiceIGPM = indiceReajuste;
-        if (indiceReajuste < 0) {
-            indiceReajuste = 0;
+        if (indiceReajuste < 1) {
+            indiceReajuste = 1;
             return indiceReajuste;
         }
     }
