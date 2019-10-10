@@ -16,6 +16,7 @@ contract ConfissaoDeDivida {
         valor = valorDivida;
         objeto = objetoDivida;
         parcelamento = numeroParcelas;
+            require (parcelamento < 24, "Parcelamento Inválido");
     }
     
     function ValorDoDebito() public view returns (uint) {
