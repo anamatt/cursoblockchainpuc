@@ -28,7 +28,6 @@ contract ConfissaoDeDivida {
     }
 
     function CalcularParcela (uint parcelas) public returns (uint) {
-        require (parcelas < 24, "Parcelamento Inválido");
         parcelas = parcelamento;
         valorParcela = valor/parcelamento;
         return valorParcela;
@@ -44,6 +43,7 @@ contract ConfissaoDeDivida {
         valor = reajuste;
         return valor;
     }
+    
     function aplicarMulta (uint mesesRestantes, uint percentual) public {
         require(mesesRestantes < parcelamento, "Cálculo inválido");
         require (percentual < 24, "Percentual inválido");
