@@ -6,7 +6,7 @@ contract ConfissaoDeDivida {
     string public devedor;
     string public objeto;
     uint private valor;
-    int private indiceReajuste;
+    uint private indiceReajuste;
     uint private valorParcela;
     uint private parcelamento;
     
@@ -21,22 +21,24 @@ contract ConfissaoDeDivida {
     function ValorDoDebito() public view returns (uint) {
         return valor;
     }
-    
-    function ValorDaParcela() public view returns (uint) {
-        return valorParcela;
-    }
      
-    function CalcularParcela () public returns (uint) {
-        valorParcela = valor/parcelamento;
+     function ValorDaParcela() public view returns (uint) {
         return valorParcela;
     }
+
+    function CalcularParcela (uint parcelas) public {
+        parcelas = parcelamento;
+        parcelas = valor/parcelamento;
+        valorParcela = parcelas;
+    }
     
-    function InserirReajusteAnual (int indiceIGPM) public returns (int) {
-        indiceIGPM = indiceReajuste;
-        if (indiceReajuste < 1) {
-            indiceReajuste = 1;
-            return indiceReajuste;
+    function InserirReajusteAnual (uint indiceIGPM) public {
+        if (indiceIGPM < 1) {
+            indiceIGPM = 1;
         }
+        uint reajuste = 1;
+        reajuste = (valor*indiceIGPM);
+        indiceReajuste = reajuste;
     }
 
 }
