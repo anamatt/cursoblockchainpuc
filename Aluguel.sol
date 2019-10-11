@@ -76,3 +76,4 @@ LEMBRAR DESTES LINKS:
 https://solidity.readthedocs.io/en/v0.5.12/types.html
 https://medium.com/@vieira.lucas/solidity-crie-contratos-inteligentes-para-a-blockchain-ethereum-c771eb8567cf
 https://www.udemy.com/course/contratos-inteligentes/ - INSCREVEEEEEER
+https://solidity.readthedocs.io/en/v0.5.3/types.html
