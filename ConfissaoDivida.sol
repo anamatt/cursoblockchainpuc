@@ -5,49 +5,50 @@ contract ConfissaoDeDivida {
     string public credor;
     string public devedor;
     string public objeto;
-    uint private valor;
-    uint private indiceReajuste;
-    uint private valorParcela;
-    uint private parcelamento;
+    int private valor;
+    int private indiceReajuste;
+    int private valorParcela;
+    int private parcelamento;
     
-    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, uint valorDivida, uint numeroParcelas) public{
+    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, int valorDivida, int numeroParcelas) public{
         credor = nomeCredor;
         devedor = nomeDevedor;
         valor = valorDivida;
+            require (valor > 0, "Valor incorreto");
         objeto = objetoDivida;
         parcelamento = numeroParcelas;
             require (parcelamento < 24, "Parcelamento Inválido");
     }
     
-    function ValorDoDebito() public view returns (uint) {
+    function ValorDoDebito() public view returns (int) {
         return valor;
     }
      
-    function ValorDaParcela() public view returns (uint) {
+    function ValorDaParcela() public view returns (int) {
         return valorParcela;
     }
 
-    function CalcularParcela (uint parcelas) public returns (uint) {
+    function CalcularParcela (int parcelas) public returns (int) {
         parcelas = parcelamento;
         valorParcela = valor/parcelamento;
         return valorParcela;
     }
     
-    function InserirReajusteAnual (uint indiceIGPM) public returns (uint) {
+    function InserirReajusteAnual (int indiceIGPM) public returns (int) {
         if (indiceIGPM < 1) {
             indiceIGPM = 1;
         }
-        uint reajuste = 1;
-        reajuste = (valor*indiceIGPM);
+        int reajuste = 1;
+        reajuste = (valorParcela*indiceIGPM);
         indiceReajuste = reajuste;
-        valor = reajuste;
-        return valor;
+        valorParcela = reajuste;
+        return valorParcela;
     }
     
-    function aplicarMulta (uint mesesRestantes, uint percentual) public {
+    function aplicarMulta (int mesesRestantes, int percentual) public {
         require(mesesRestantes < parcelamento, "Cálculo inválido");
         require (percentual < 24, "Percentual inválido");
-        for (uint i=1; i<mesesRestantes; i++) {
+        for (int i=1; i<mesesRestantes; i++) {
             valor = ((valor+(valor/10))*percentual)/100;
         }
     }
