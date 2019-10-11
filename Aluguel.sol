@@ -7,6 +7,9 @@ contract Aluguel {
     string public locatario;
     string public locador;
     uint private valor;
+    uint256 constant public numeroMaximoLegalDeAlgueisParaMulta = 3;
+    bool[] public statusPagamento;
+    address payable public contaLocatario;
     
 /*
 string = texto - deve ser usado entre aspas - ex. string "texto"
@@ -17,12 +20,13 @@ string = texto - deve ser usado entre aspas - ex. string "texto"
 
     uint256 constant numeroMaximoLegalDeAlugueisParaMulta = 3;
 
-    constructor (string memory nomeLocador, string memory nomeLocatario, uint256 valorDoAluguel)
+    constructor (string memory nomeLocador, string memory nomeLocatario, address payable paramContaLocatario, uint256 valorDoAluguel)
 /*para o constructor, utiliza-se o () para definir seus parâmetros*/
     public{
         locador = nomeLocador;
         locatario = nomeLocatario;
         valor = valorDoAluguel;
+        contaLocatario = paramContaLocatario;
     }
 
 //após a function, é necessário usar (), como forma de linguagem 
@@ -68,7 +72,13 @@ i++ = atalho que significa i = i + 1
 */
     }
         
+    function receberPagamento() public payable {
+        require(msg.value>=valor, "Valor insuficiente");
+        contaLocatario.transfer(msg.value);
+        statusPagamento.push(true);
+    }
 
+    
 }
 
 /*
