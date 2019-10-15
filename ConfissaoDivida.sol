@@ -5,12 +5,14 @@ contract ConfissaoDeDivida {
     string public credor;
     string public devedor;
     string public objeto;
-    int private valor;
-    int private indiceReajuste;
-    int private valorParcela;
-    int private parcelamento;
+    uint private valor;
+    uint private indiceReajuste;
+    uint private valorParcela;
+    uint private parcelamento;    
+    bool[] public confirmacaoPagamento;
+    address payable public contaDeposito;
     
-    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, int valorDivida, int numeroParcelas) public{
+    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, address payable contaCredor, uint valorDivida, uint numeroParcelas) public{
         credor = nomeCredor;
         devedor = nomeDevedor;
         valor = valorDivida;
@@ -18,39 +20,46 @@ contract ConfissaoDeDivida {
         objeto = objetoDivida;
         parcelamento = numeroParcelas;
             require (parcelamento < 24, "Parcelamento Inválido");
+        contaDeposito = contaCredor;
     }
     
-    function ValorDoDebito() public view returns (int) {
+    function ValorDoDebito() public view returns (uint) {
         return valor;
     }
      
-    function ValorDaParcela() public view returns (int) {
+    function ValorDaParcela() public view returns (uint) {
         return valorParcela;
     }
 
-    function CalcularParcela (int parcelas) public returns (int) {
+    function CalcularParcela (uint parcelas) public returns (uint) {
         parcelas = parcelamento;
         valorParcela = valor/parcelamento;
         return valorParcela;
     }
     
-    function InserirReajusteAnual (int indiceIGPM) public returns (int) {
-        if (indiceIGPM < 1) {
-            indiceIGPM = 1;
+    function InserirReajusteAnual (uint indiceIGPM) public returns (uint) {
+        if (indiceIGPM < 10000) {
+            indiceIGPM = 10000;
         }
-        int reajuste = 1;
-        reajuste = (valorParcela*indiceIGPM);
+        uint reajuste = 1;
+        reajuste = (valorParcela+((valorParcela*indiceIGPM)/1000000));
         indiceReajuste = reajuste;
         valorParcela = reajuste;
         return valorParcela;
     }
     
-    function aplicarMulta (int mesesRestantes, int percentual) public {
+    function aplicarMulta (uint mesesRestantes, uint percentual) public {
         require(mesesRestantes < parcelamento, "Cálculo inválido");
         require (percentual < 24, "Percentual inválido");
-        for (int i=1; i<mesesRestantes; i++) {
+        for (uint i=1; i<mesesRestantes; i++) {
             valor = ((valor+(valor/10))*percentual)/100;
         }
     }
+    
+        function pagarParcela() public payable {
+        require (msg.value>=valorParcela, "Valor de depósito insuficiente");
+        contaDeposito.transfer(msg.value);
+        confirmacaoPagamento.push(true);
+        }
     
 }
