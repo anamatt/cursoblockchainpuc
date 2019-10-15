@@ -31,10 +31,14 @@ contract ConfissaoDeDivida {
     function ValorDaParcela() public view returns (uint) {
         return valorParcela;
     }
-    
+
+//REAJUSTE UTILIZA ÍNDICE ANUAL IGP-M/FGV - VALOR SEM A VÍRGULA - EX 1,2345 VIRA 12345    
     function InserirReajusteAnual (uint indiceIGPM) public returns (uint) {
         if (indiceIGPM < 10000) {
             indiceIGPM = 10000;
+        }
+        else if (indiceIGPM > 100000) {
+            indiceIGPM = 100000;
         }
         uint reajuste = 1;
         reajuste = (valorParcela+((valorParcela*indiceIGPM)/1000000));
@@ -42,12 +46,12 @@ contract ConfissaoDeDivida {
         valorParcela = reajuste;
         return valorParcela;
     }
-    
-    function aplicarMulta (uint mesesRestantes, uint percentual) public {
-        require(mesesRestantes < parcelamento, "Cálculo inválido");
-        require (percentual < 24, "Percentual inválido");
-        for (uint i=1; i<mesesRestantes; i++) {
-            valor = ((valor+(valor/10))*percentual)/100;
+
+//CÁLCULO DA MULTA PELO ATRASO DE PARCELAS
+    function aplicarMulta (uint periodoAtraso) public {
+        require(periodoAtraso >= 1, "Cálculo inválido");
+        for (uint i=1; i<periodoAtraso; i++) {
+            valor = ((valor+(valor/10))*periodoAtraso)/100;
         }
     }
     
