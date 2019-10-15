@@ -13,14 +13,15 @@ contract ConfissaoDeDivida {
     address payable public contaDeposito;
     
     constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, address payable contaCredor, uint valorDivida, uint numeroParcelas) public{
+        require (valorDivida > 0, "Valor incorreto");
+        require (numeroParcelas < 24, "Parcelamento Inválido");
         credor = nomeCredor;
         devedor = nomeDevedor;
         valor = valorDivida;
-            require (valor > 0, "Valor incorreto");
         objeto = objetoDivida;
         parcelamento = numeroParcelas;
-            require (parcelamento < 24, "Parcelamento Inválido");
         contaDeposito = contaCredor;
+        valorParcela =valor/parcelamento;
     }
     
     function ValorDoDebito() public view returns (uint) {
@@ -28,12 +29,6 @@ contract ConfissaoDeDivida {
     }
      
     function ValorDaParcela() public view returns (uint) {
-        return valorParcela;
-    }
-
-    function CalcularParcela (uint parcelas) public returns (uint) {
-        parcelas = parcelamento;
-        valorParcela = valor/parcelamento;
         return valorParcela;
     }
     
