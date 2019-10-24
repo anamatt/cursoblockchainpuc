@@ -5,22 +5,50 @@ contract ConfissaoDeDivida {
     string public credor;
     string public devedor;
     string public objeto;
+    uint private dataVencimentoParcela;
     uint private valor;
+    uint private valorMulta;
     uint private indiceReajuste;
     uint private valorParcela;
     uint private parcelamento;    
     bool[] public confirmacaoPagamento;
-    address payable public contaDeposito;
+    bool public retirado;
+    bool public pago;
+    address payable public contaCredor;
+    address payable public advogado;
+    address public contaDevedor;
     
-    constructor (string memory nomeCredor, string memory nomeDevedor, string memory objetoDivida, address payable contaCredor, uint valorDivida, uint numeroParcelas) public{
+    event parcelaQuitada (uint valorParcela);
+    
+    modifier somenteCredor () {
+        require (msg.sender == contaCredor || msg.sender == advogado, "Operação exclusiva da parte Credora");
+        _;    
+    }
+    
+    modifier somenteDevedor () {
+        require (msg.sender == contaDevedor, "Operação exclusiva da parte Devedora");
+        _;
+    }    
+
+    constructor (
+        address payable _contaCredor,
+        address _contaDevedor,
+        string memory nomeCredor, 
+        string memory nomeDevedor, 
+        string memory objetoDivida, 
+        uint valorDivida, 
+        uint numeroParcelas
+    ) public{
         require (valorDivida > 0, "Valor incorreto");
         require (numeroParcelas < 24, "Parcelamento Inválido");
         credor = nomeCredor;
+        contaCredor = _contaCredor;
         devedor = nomeDevedor;
+        contaDevedor = _contaDevedor;
+        advogado = msg.sender;
         valor = valorDivida;
         objeto = objetoDivida;
         parcelamento = numeroParcelas;
-        contaDeposito = contaCredor;
         valorParcela =valor/parcelamento;
     }
     
@@ -32,7 +60,7 @@ contract ConfissaoDeDivida {
         return valorParcela;
     }
 
-//REAJUSTE UTILIZA ÍNDICE ANUAL IGP-M/FGV - VALOR SEM A VÍRGULA - EX 1,2345 VIRA 12345    
+//REAJUSTE UTILIZA ÍNDICE ANUAL IGP-M/FGV - VALOR DEVE SER INSERIDO SEM A VÍRGULA - EX 1,2345 DEVE SER INSERIDO COMO 12345    
     function InserirReajusteAnual (uint indiceIGPM) public returns (uint) {
         if (indiceIGPM < 10000) {
             indiceIGPM = 10000;
@@ -48,17 +76,36 @@ contract ConfissaoDeDivida {
     }
 
 //CÁLCULO DA MULTA PELO ATRASO DE PARCELAS
-    function aplicarMulta (uint periodoAtraso) public {
+    function simulacaoMulta (uint periodoAtraso) public {
         require(periodoAtraso >= 1, "Cálculo inválido");
         for (uint i=1; i<periodoAtraso; i++) {
-            valor = ((valor+(valor/10))*periodoAtraso)/100;
+            valorMulta = ((valor/10)*periodoAtraso)/100;
         }
     }
-    
-        function pagarParcela() public payable {
-        require (msg.value>=valorParcela, "Valor de depósito insuficiente");
-        contaDeposito.transfer(msg.value);
-        confirmacaoPagamento.push(true);
-        }
+
+//FUNÇÃO PARA PAGAMENTO DE PARCELAS NA DATA
+    function pagamentoNoPrazo () public payable somenteDevedor {
+        require (now <= dataVencimentoParcela, "Atraso - deve ser feito pagamento com encargos de mora.");
+        require (msg.value == valorParcela, "Valor incorreto");
+        pago = true;
+        emit parcelaQuitada(msg.value);
+    }
+
+//FUNÇÃO PARA PAGAMENTO DE PARCELAS APÓS A DATA DO VENCIMENTO    
+    function pagamentoEmMora () public payable somenteDevedor {
+        require (now > dataVencimentoParcela, "Pagamento dentro do prazo");
+        require (!pago, "Parcela quitada");
+        require (msg.value == (valorMulta + valorParcela), "Valor incorreto");
+        pago = true;
+        emit parcelaQuitada(msg.value);
+    }
+
+     function depositoParaCredor() public somenteCredor {
+        require(pago, "Pagamento não realizado");
+        require(retirado == false, "Distribuição já realizada.");
+        contaCredor.transfer((valorParcela*9)/10);
+        advogado.transfer(address(this).balance);
+        retirado = true;
+    }
     
 }
