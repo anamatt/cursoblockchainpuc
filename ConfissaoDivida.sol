@@ -40,7 +40,7 @@ contract ConfissaoDeDivida {
         uint numeroParcelas
     ) public{
         require (valorDivida > 0, "Valor incorreto");
-        require (numeroParcelas < 24, "Parcelamento Inválido");
+        require (numeroParcelas < 36, "Parcelamento Inválido");
         credor = nomeCredor;
         contaCredor = _contaCredor;
         devedor = nomeDevedor;
@@ -58,6 +58,10 @@ contract ConfissaoDeDivida {
      
     function ValorDaParcela() public view returns (uint) {
         return valorParcela;
+    }
+    
+    function ValorDaMulta () public view returns (uint) {
+        return valorMulta;
     }
 
 //REAJUSTE UTILIZA ÍNDICE ANUAL IGP-M/FGV - VALOR DEVE SER INSERIDO SEM A VÍRGULA - EX 1,2345 DEVE SER INSERIDO COMO 12345    
@@ -77,7 +81,7 @@ contract ConfissaoDeDivida {
 
 //CÁLCULO DA MULTA PELO ATRASO DE PARCELAS
     function simulacaoMulta (uint periodoAtraso) public {
-        require(periodoAtraso >= 1, "Cálculo inválido");
+        require(periodoAtraso >= 86400, "Cálculo inválido");
         for (uint i=1; i<periodoAtraso; i++) {
             valorMulta = ((valor/10)*periodoAtraso)/100;
         }
@@ -100,10 +104,11 @@ contract ConfissaoDeDivida {
         emit parcelaQuitada(msg.value);
     }
 
+// FUNÇÃO PARA ENVIO DOS VALORES PAGOS AO CREDOR
      function depositoParaCredor() public somenteCredor {
         require(pago, "Pagamento não realizado");
         require(retirado == false, "Distribuição já realizada.");
-        contaCredor.transfer((valorParcela*9)/10);
+        contaCredor.transfer((valor*9)/10);
         advogado.transfer(address(this).balance);
         retirado = true;
     }
