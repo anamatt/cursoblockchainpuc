@@ -5,7 +5,7 @@ contract ConfissaoDeDivida {
     string public credor;
     string public devedor;
     string public objeto;
-    uint private dataVencimentoParcela;
+    uint private vencimentoParcela;
     uint private valor;
     uint private valorMulta;
     uint private indiceReajuste;
@@ -37,7 +37,8 @@ contract ConfissaoDeDivida {
         string memory nomeDevedor, 
         string memory objetoDivida, 
         uint valorDivida, 
-        uint numeroParcelas
+        uint numeroParcelas,
+        uint _vencimentoParcela
     ) public{
         require (valorDivida > 0, "Valor incorreto");
         require (numeroParcelas < 36, "Parcelamento Inválido");
@@ -49,6 +50,7 @@ contract ConfissaoDeDivida {
         valor = valorDivida;
         objeto = objetoDivida;
         parcelamento = numeroParcelas;
+        vencimentoParcela = _vencimentoParcela;
         valorParcela =valor/parcelamento;
     }
     
@@ -64,7 +66,7 @@ contract ConfissaoDeDivida {
         return valorMulta;
     }
 
-//REAJUSTE UTILIZA ÍNDICE ANUAL IGP-M/FGV - VALOR DEVE SER INSERIDO SEM A VÍRGULA - EX 1,2345 DEVE SER INSERIDO COMO 12345    
+    //REAJUSTE UTILIZA ÍNDICE ANUAL IGP-M/FGV - VALOR DEVE SER INSERIDO SEM A VÍRGULA - EX 1,2345 DEVE SER INSERIDO COMO 12345    
     function InserirReajusteAnual (uint indiceIGPM) public returns (uint) {
         if (indiceIGPM < 10000) {
             indiceIGPM = 10000;
@@ -79,7 +81,7 @@ contract ConfissaoDeDivida {
         return valorParcela;
     }
 
-//CÁLCULO DA MULTA PELO ATRASO DE PARCELAS
+    //CÁLCULO DA MULTA PELO ATRASO DE PARCELAS - em segundos - antes de 24 horas não será considerado atraso
     function simulacaoMulta (uint periodoAtraso) public {
         require(periodoAtraso >= 86400, "Cálculo inválido");
         for (uint i=1; i<periodoAtraso; i++) {
@@ -87,24 +89,24 @@ contract ConfissaoDeDivida {
         }
     }
 
-//FUNÇÃO PARA PAGAMENTO DE PARCELAS NA DATA
+    //FUNÇÃO PARA PAGAMENTO DE PARCELAS NA DATA
     function pagamentoNoPrazo () public payable somenteDevedor {
-        require (now <= dataVencimentoParcela, "Atraso - deve ser feito pagamento com encargos de mora.");
+        require (now <= vencimentoParcela, "Atraso - deve ser feito pagamento com encargos de mora.");
         require (msg.value == valorParcela, "Valor incorreto");
         pago = true;
         emit parcelaQuitada(msg.value);
     }
 
-//FUNÇÃO PARA PAGAMENTO DE PARCELAS APÓS A DATA DO VENCIMENTO    
+    //FUNÇÃO PARA PAGAMENTO DE PARCELAS APÓS A DATA DO VENCIMENTO    
     function pagamentoEmMora () public payable somenteDevedor {
-        require (now > dataVencimentoParcela, "Pagamento dentro do prazo");
+        require (now > vencimentoParcela, "Pagamento dentro do prazo");
         require (!pago, "Parcela quitada");
         require (msg.value == (valorMulta + valorParcela), "Valor incorreto");
         pago = true;
         emit parcelaQuitada(msg.value);
     }
 
-// FUNÇÃO PARA ENVIO DOS VALORES PAGOS AO CREDOR
+    // FUNÇÃO PARA ENVIO DOS VALORES PAGOS AO CREDOR
      function depositoParaCredor() public somenteCredor {
         require(pago, "Pagamento não realizado");
         require(retirado == false, "Distribuição já realizada.");
