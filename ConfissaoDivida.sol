@@ -91,7 +91,7 @@ contract ConfissaoDeDivida {
 
     //FUNÇÃO PARA PAGAMENTO DE PARCELAS NA DATA
     function pagamentoNoPrazo () public payable somenteDevedor {
-        require (now <= vencimentoParcela, "Atraso - deve ser feito pagamento com encargos de mora.");
+        require (now <= (vencimentoParcela+86399), "Atraso - deve ser feito pagamento com encargos de mora.");
         require (msg.value == valorParcela, "Valor incorreto");
         pago = true;
         emit parcelaQuitada(msg.value);
