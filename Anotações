@@ -1,0 +1,20 @@
+Introdução à internet
+
+DNS - Domain Name Service = serviço que transforma o nome de domínio de um site, como "twitter.com" em seu IP (104.244.42.1), 
+para que o navegador possa se conectar ao servidor do domínio requerido. 
+-> Como conferir um IP? Windows > PROMPT DE COMANDO
+
+O navegador faz uma requisição (request) para o IP requerido, e é obrigado a seguir um protocolo: HTTP
+
+HTTP - Hyper Text Transfer Protocol
+HTTPS - Hyper Text Transfer Protocol Safe
+
+Seguindo o mesmo protocolo HTTP(S), o servidor responde (response) a requisição, trazendo o sítio proposto em sua linguagem
+-> em regra, HTML, mas pode ser outra linguagem
+
+HTML - Hypertext Markup Language
+
+O HTML é a linguagem para escrever o Hypertext do HTTP. É a base de qualquer conteúdo da internet.
+Ele pode ser utilizado para texto, imagem, áudio. 
+
+
