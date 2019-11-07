@@ -10,10 +10,15 @@ contract ConfissaoDeDivida {
     uint private valorMulta;
     uint private indiceReajuste;
     uint private valorParcela;
-    uint private parcelamento;    
+    uint private parcelamento; 
+    uint private totalpago;
+    uint private dataContrato;
+    uint private dataProximaParcela;
     bool[] public confirmacaoPagamento;
     bool public retirado;
     bool public pago;
+    bool public parcelaPaga;
+    bool public parcelamentoCompleto;
     address payable public contaCredor;
     address payable public advogado;
     address public contaDevedor;
@@ -38,7 +43,9 @@ contract ConfissaoDeDivida {
         string memory objetoDivida, 
         uint valorDivida, 
         uint numeroParcelas,
-        uint _vencimentoParcela
+        uint _vencimentoParcela,
+        uint dataInicioContrato,
+        uint dataPrimeiraParcela
     ) public{
         require (valorDivida > 0, "Valor incorreto");
         require (numeroParcelas < 36, "Parcelamento Inválido");
@@ -52,6 +59,8 @@ contract ConfissaoDeDivida {
         parcelamento = numeroParcelas;
         vencimentoParcela = _vencimentoParcela;
         valorParcela =valor/parcelamento;
+        dataContrato = dataInicioContrato;
+        dataProximaParcela = dataPrimeiraParcela;
     }
     
     function ValorDoDebito() public view returns (uint) {
@@ -64,6 +73,10 @@ contract ConfissaoDeDivida {
     
     function ValorDaMulta () public view returns (uint) {
         return valorMulta;
+    }
+    
+        function VencimentoProximaParcela () public view returns (uint) {
+        return dataProximaParcela;
     }
 
     //REAJUSTE UTILIZA ÍNDICE ANUAL IGP-M/FGV - VALOR DEVE SER INSERIDO SEM A VÍRGULA - EX 1,2345 DEVE SER INSERIDO COMO 12345    
@@ -93,7 +106,9 @@ contract ConfissaoDeDivida {
     function pagamentoNoPrazo () public payable somenteDevedor {
         require (now <= (vencimentoParcela+86399), "Atraso - deve ser feito pagamento com encargos de mora.");
         require (msg.value == valorParcela, "Valor incorreto");
-        pago = true;
+        totalpago ++;
+        parcelaPaga = true;
+        dataProximaParcela = dataProximaParcela + 2629746;
         emit parcelaQuitada(msg.value);
     }
 
@@ -102,7 +117,9 @@ contract ConfissaoDeDivida {
         require (now > vencimentoParcela, "Pagamento dentro do prazo");
         require (!pago, "Parcela quitada");
         require (msg.value == (valorMulta + valorParcela), "Valor incorreto");
-        pago = true;
+        totalpago ++;
+        parcelaPaga = true;
+        dataProximaParcela = dataProximaParcela + 2629746;
         emit parcelaQuitada(msg.value);
     }
 
